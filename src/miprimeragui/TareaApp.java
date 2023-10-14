@@ -13,23 +13,69 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import java.time.LocalDate;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class TareaApp extends Application {
-    private ObservableList<Tarea> tareas = FXCollections.observableArrayList();
-
+    private final ObservableList<Tarea> tareas = FXCollections.observableArrayList();
+    private final ListView<String> tareaListView = new ListView<>();
+    private String logCorreo="";
     public static void main(String[] args) {
         launch(args);
     }
+    
+    public void setLogCorreo(String estado){
+        this.logCorreo = estado;
+    }
+    
+    public void login(){
+        Stage login_ = new Stage();
+        
+        //campo para ingresa correo
+        TextField correo = new TextField();
+        correo.setPromptText("Ingrese con su correo");
+        
+        Button iniciarLoginButton = new Button("Login");
+        iniciarLoginButton.setOnAction(event -> {
+            String getCorreo = correo.getText();
+            
+            if (!getCorreo.isEmpty()) {
+                correo.clear();
+                login_.close(); 
+                if(validarCorreo(getCorreo))
+                    setLogCorreo(getCorreo);
+            }
+            
+        });
+        
+        VBox rootLayout2 = new VBox(10, correo, iniciarLoginButton);
+        rootLayout2.setPadding(new Insets(10));
 
+        // Crear la escena
+        Scene scene2 = new Scene(rootLayout2, 400, 350);
+
+        login_.setScene(scene2);
+        login_.showAndWait();
+        
+    }
+    
+    public boolean estalogueado(String x){
+        boolean verificacion=false;
+        if (!"".equals(x))
+            verificacion=true;
+        return verificacion;
+    }
+    
+    
+    
     @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Aplicación de Tareas");
-
+    public void start(Stage primaryStage2) {
+        primaryStage2.setTitle("Aplicación de Tareas");
         // Lista de Tareas
-        ListView<String> tareaListView = new ListView<>();
+        
         tareaListView.setPrefHeight(200);
         tareaListView.setCellFactory(param -> new ListCell<String>() {
             @Override
@@ -50,7 +96,12 @@ public class TareaApp extends Application {
 
         // Crear un botón para agregar tarea
         Button agregarTareaButton = new Button("Agregar Tarea");
-        agregarTareaButton.setOnAction(e -> mostrarPantallaSecundaria(tareaListView));
+        agregarTareaButton.setOnAction(e->{
+            if(!estalogueado(logCorreo))
+                login();
+            else
+                mostrarPantallaSecundaria(tareaListView);
+        });
 
         // Crear un diseño para organizar los elementos
         VBox rootLayout = new VBox(10, tareaListView, agregarTareaButton);
@@ -59,8 +110,8 @@ public class TareaApp extends Application {
         // Crear la escena
         Scene scene = new Scene(rootLayout, 400, 350);
 
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStage2.setScene(scene);
+        primaryStage2.show();
     }
 
     private void mostrarPantallaSecundaria(ListView<String> tareaListView) {
@@ -101,6 +152,19 @@ public class TareaApp extends Application {
 
         secondaryStage.showAndWait();
     }
+
+    private boolean validarCorreo(String email) {
+        String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(EMAIL_REGEX);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+        }
+
+   
+
+    
+
+   
 }
 
 
