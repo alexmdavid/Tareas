@@ -159,6 +159,9 @@ public class TareaApp extends Application {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
         }
+    private void guardarLaSesion(){
+        EscribirArchivo.write(logCorreo);
+    }
 
    
 
